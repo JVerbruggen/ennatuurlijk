@@ -1,0 +1,75 @@
+name: Deploy Scraper to Azure Function
+
+on: workflow_dispatch
+
+env:
+  STORAGE_ACCOUNT_NAME: waitingtimesstorage
+  STORAGE_CONTAINER_NAME: scraper-package
+  PACKAGE_NAME: scraper-latest.zip
+  FUNCTION_APP_NAME: fc-ennatuurlijk-data-fetchers
+  RESOURCE_GROUP: ennatuurlijk-project
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Azure
+      run: |
+        npm install -g azure-functions-core-tools@4 --unsafe-perm true
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Zip the function app
+      run: zip -r ${{ env.PACKAGE_NAME }} .
+
+    - name: Upload ZIP to Blob Storage
+      run: |
+        az storage blob upload \
+          --account-name ${{ env.STORAGE_ACCOUNT_NAME }} \
+          --container-name ${{ env.STORAGE_CONTAINER_NAME }} \
+          --name ${{ env.PACKAGE_NAME }} \
+          --file ${{ env.PACKAGE_NAME }} \
+          --auth-mode login
+
+    - name: Generate SAS token and set WEBSITE_RUN_FROM_PACKAGE
+      run: |
+        # Set expiry 24 hours from now (UTC)
+        EXPIRY=$(date -u -d "1 day" '+%Y-%m-%dT%H:%MZ')
+
+        # Generate SAS token
+        SAS_TOKEN=$(az storage blob generate-sas \
+          --account-name ${{ env.STORAGE_ACCOUNT_NAME }} \
+          --container-name ${{ env.STORAGE_CONTAINER_NAME }} \
+          --name functionapp.zip \
+          --permissions r \
+          --expiry $EXPIRY \
+          --auth-mode login \
+          --output tsv)
+
+        # Construct full SAS URL
+        SAS_URL="https://${{ env.STORAGE_ACCOUNT_NAME }}.blob.core.windows.net/${{ env.STORAGE_CONTAINER_NAME }}/${{ env.PACKAGE_NAME }}?$SAS_TOKEN"
+
+        echo "SAS_URL=$SAS_URL" >> $GITHUB_ENV
+
+        # Set WEBSITE_RUN_FROM_PACKAGE
+        az functionapp config appsettings set \
+          --name ${{ env.FUNCTION_APP_NAME }} \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --settings WEBSITE_RUN_FROM_PACKAGE="$SAS_URL"
+
+    - name: Restart the function app
+      run: |
+        az functionapp restart \
+          --name ${{ env.FUNCTION_APP_NAME }} \
+          --resource-group ${{ env.RESOURCE_GROUP }}

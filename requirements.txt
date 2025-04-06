@@ -1,0 +1,6 @@
+azure-servicebus
+azure-data-tables
+beautifulsoup4
+flask
+flasgger
+python-dotenv
