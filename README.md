@@ -4,7 +4,7 @@ Theme Park Waiting Times API (TPWT) is an easy to use and free API to get up-to-
 
 ## Try it out
 
-Go to the [TPWT API](http://20.75.248.225:5000/apidocs/) page
+TPWT is now live! Go to the [TPWT API](http://20.75.248.225:5000/apidocs/) page
 
 ## System level overview
 
