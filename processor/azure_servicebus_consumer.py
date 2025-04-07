@@ -14,6 +14,7 @@ class AzureServiceBusConsumer:
         servicebus_queue_name           = os.getenv("AZURE_SERVICE_BUS_QUEUE_NAME")
         servicebus_connection_string    = os.getenv("AZURE_SERVICE_BUS_CONNECTION_STRING")
         servicebus_client               = ServiceBusClient.from_connection_string(servicebus_connection_string)
+        print("CONNSB", servicebus_connection_string)
 
         with servicebus_client:
             with servicebus_client.get_queue_receiver(servicebus_queue_name) as receiver:

@@ -20,6 +20,7 @@ class AzureTableStoragePublisher:
 
         table_storage_connection_string     = os.getenv("AZURE_TABLE_STORAGE_CONNECTION_STRING")
         table_storage_table_name            = os.getenv("AZURE_TABLE_STORAGE_TABLE_NAME")
+        print("CONNTS", table_storage_connection_string)
 
         table_service_client = TableServiceClient.from_connection_string(table_storage_connection_string)
         self._table_client = table_service_client.get_table_client(table_storage_table_name)
