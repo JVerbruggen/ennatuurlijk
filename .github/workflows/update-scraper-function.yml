@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: $AZURE_REGISTRY.azurecr.io/$ACR_REPO_NAME:latest
+          tags: ${{ env.AZURE_REGISTRY }}.azurecr.io/${{ env.ACR_REPO_NAME }}:latest
           build-args: |
             "AZURE_SERVICE_BUS_QUEUE_NAME=${{ secrets.AZURE_SERVICE_BUS_QUEUE_NAME }}"
             "AZURE_SERVICE_BUS_CONNECTION_STRING=${{ secrets.AZURE_SERVICE_BUS_CONNECTION_STRING }}"
