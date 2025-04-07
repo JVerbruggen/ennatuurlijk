@@ -2,13 +2,9 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flasgger import Swagger
-import os
-import statistics
 
 from ridestore import *
 from waitingtime_logic import *
-
-load_dotenv()
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -140,4 +136,9 @@ def get_daily_averages(theme_park, ride_name):
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    load_dotenv()
+
+    if os.getenv("DEBUG_MODE") == "TRUE":
+        app.run(debug=True)
+    else:
+        app.run(host='0.0.0.0', port=5000)

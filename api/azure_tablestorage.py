@@ -40,11 +40,17 @@ class AzureTableStorageReader(WaitingTimeStore):
 
         return self._table_client.query_entities(query_filter=query)
 
+    def _validate_query_parameter(self, parameter: str):
+        return parameter.isalnum()
+
     def get_all_ride_waiting_times(self, theme_park, ride_name, start_time_utc, end_time_utc):
         """Get all waiting times belonging to a ride"""
 
+        assert self._validate_query_parameter(theme_park), "Use only alphanumerical input for parameters"
+        assert self._validate_query_parameter(ride_name), "Use only alphanumerical input for parameters"
+
         print("start: ", start_time_utc)
-        query = f"PartitionKey eq '{theme_park}' and ride_name eq '{ride_name}' and timestamp le datetime'{start_time_utc.isoformat()}'"
+        query = f"PartitionKey eq '{theme_park}' and ride_name eq '{ride_name}' and timestamp ge datetime'{start_time_utc.isoformat()}' and timestamp lt datetime'{end_time_utc.isoformat()}'"
         entities = self._run_query(query)
 
         return entities
