@@ -34,9 +34,11 @@ jobs:
         run: |
           az acr login --name $AZURE_REGISTRY
 
-      - name: Build and push Docker image
-        run: |
-          cd $ROOT_FOLDER
-          IMAGE_URI=$AZURE_REGISTRY.azurecr.io/$ACR_REPO_NAME:latest
-          docker build -t $IMAGE_URI --build-arg AZURE_SERVICE_BUS_QUEUE_NAME=${{ secrets.AZURE_SERVICE_BUS_QUEUE_NAME }} --build-arg AZURE_SERVICE_BUS_CONNECTION_STRING=${{ secrets.AZURE_SERVICE_BUS_CONNECTION_STRING }} .
-          docker push $IMAGE_URI
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: $AZURE_REGISTRY.azurecr.io/$ACR_REPO_NAME:latest
+          build-args: |
+            "AZURE_SERVICE_BUS_QUEUE_NAME=${{ secrets.AZURE_SERVICE_BUS_QUEUE_NAME }}"
+            "AZURE_SERVICE_BUS_CONNECTION_STRING=${{ secrets.AZURE_SERVICE_BUS_CONNECTION_STRING }}"
