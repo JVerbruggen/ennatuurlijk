@@ -1,0 +1,45 @@
+name: Build and Push Docker Image Scraper
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    env:
+      AZURE_REGISTRY: ennatuurlijkscraperregistry
+      ACR_REPO_NAME: scraper
+      ROOT_FOLDER: scraper
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure using Service Principal
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          auth-type: SERVICE_PRINCIPAL
+
+      - name: Azure Container Registry login
+        run: |
+          az acr login --name $AZURE_REGISTRY
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: "{{defaultContext}}:${{ env.ROOT_FOLDER }}"
+          push: true
+          tags: ${{ env.AZURE_REGISTRY }}.azurecr.io/${{ env.ACR_REPO_NAME }}:latest
+          build-args: |
+            "AZURE_SERVICE_BUS_QUEUE_NAME=${{ secrets.AZURE_SERVICE_BUS_QUEUE_NAME }}"
+            "AZURE_SERVICE_BUS_CONNECTION_STRING=${{ secrets.AZURE_SERVICE_BUS_CONNECTION_STRING }}"

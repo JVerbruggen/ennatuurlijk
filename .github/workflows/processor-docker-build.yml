@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Image Processor
 
 on:
   push:
@@ -11,8 +11,8 @@ jobs:
 
     env:
       AZURE_REGISTRY: ennatuurlijkscraperregistry
-      ACR_REPO_NAME: scraper
-      ROOT_FOLDER: scraper
+      ACR_REPO_NAME: processor
+      ROOT_FOLDER: processor
 
     permissions:
       contents: read
@@ -43,3 +43,5 @@ jobs:
           build-args: |
             "AZURE_SERVICE_BUS_QUEUE_NAME=${{ secrets.AZURE_SERVICE_BUS_QUEUE_NAME }}"
             "AZURE_SERVICE_BUS_CONNECTION_STRING=${{ secrets.AZURE_SERVICE_BUS_CONNECTION_STRING }}"
+            "AZURE_TABLE_STORAGE_TABLE_NAME=${{ secrets.AZURE_TABLE_STORAGE_TABLE_NAME }}"
+            "AZURE_TABLE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_TABLE_STORAGE_CONNECTION_STRING }}"
