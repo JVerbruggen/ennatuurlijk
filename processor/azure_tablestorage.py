@@ -27,6 +27,8 @@ class AzureTableStoragePublisher:
 
         self.state = AzureTableStoragePublisherState.CONNECTED
 
+        return self
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         assert self.state == AzureTableStoragePublisherState.CONNECTED
 
@@ -48,7 +50,7 @@ class AzureTableStoragePublisher:
             ride_name=serialized_waiting_time_item.ride_name,
             waiting_time=serialized_waiting_time_item.waiting_time,
             ride_state=serialized_waiting_time_item.ride_state,
-            timestamp=serialized_waiting_time_item.timestamp
+            timestamp=datetime.fromisoformat(serialized_waiting_time_item.timestamp.replace("Z", "+00:00"))
         )
 
         self._table_client.create_entity(entity=entity)

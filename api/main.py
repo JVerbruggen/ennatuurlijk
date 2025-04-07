@@ -1,33 +1,28 @@
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flasgger import Swagger
-from azure.data.tables import TableServiceClient
 import os
+import statistics
+
+from ridestore import *
+from waitingtime_logic import *
 
 load_dotenv()
 
 app = Flask(__name__)
 swagger = Swagger(app)
 
-table_storage_connection_string     = os.getenv("AZURE_TABLE_STORAGE_CONNECTION_STRING")
-table_storage_table_name            = os.getenv("AZURE_TABLE_STORAGE_TABLE_NAME")
+waiting_time_logic = WaitingTimeLogic()
 
-table_service_client    = TableServiceClient.from_connection_string(table_storage_connection_string)
-table_client            = table_service_client.get_table_client(table_storage_table_name)
-
-@app.route('/theme_park/<theme_park>', methods=['GET'])
-def get_by_theme_park(theme_park):
+@app.route('/theme_parks/', methods=['GET'])
+def get_theme_parks():
     """
-    Get all waiting times for given theme park
+    Get all available theme parks
     ---
-    parameters:
-      - name: theme_park
-        in: path
-        type: string
-        required: true
     responses:
       200:
-        description: List of matching entries
+        description: List of available theme parks
         schema:
           type: array
           items:
@@ -36,14 +31,108 @@ def get_by_theme_park(theme_park):
         description: Server error
     """
     try:
-        # Build the filter query
-        filter_query = f"PartitionKey eq '{theme_park}'"
+        ride_store = RideStore()
 
-        # Query the table
-        entities = table_client.query_entities(query_filter=filter_query)
+        return jsonify(ride_store.get_known_theme_parks()), 200
 
-        # Convert entities to list of dicts
-        result = [dict(entity) for entity in entities]
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/ride_names/<theme_park>/', methods=['GET'])
+def get_ride_names(theme_park):
+    """
+    Get all available ride names
+    ---
+    parameters:
+      - name: theme_park
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: List of available ride names
+        schema:
+          type: array
+          items:
+            type: object
+      500:
+        description: Server error
+    """
+    try:
+        ride_store = RideStore()
+        assert ride_store.validate_theme_park(theme_park), "Unknown theme park"
+
+        return jsonify(ride_store.get_known_rides(theme_park)), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/daily/<theme_park>/<ride_name>', methods=['GET'])
+def get_daily(theme_park, ride_name):
+    """
+    Get the todays waiting times for a ride, grouped per hour
+    ---
+    parameters:
+      - name: theme_park
+        in: path
+        type: string
+        required: true
+      - name: ride_name
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: List of waiting averages
+        schema:
+          type: array
+          items:
+            type: object
+      500:
+        description: Server error
+    """
+    try:
+        ride_store = RideStore()
+        assert ride_store.validate_theme_park(theme_park), "Unknown theme park"
+        assert ride_store.validate_ride_name(theme_park, ride_name), "Unknown ride"
+
+        result = waiting_time_logic.get_hourly_waiting_times(theme_park, ride_name)
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/daily_averages/<theme_park>/<ride_name>', methods=['GET'])
+def get_daily_averages(theme_park, ride_name):
+    """
+    Get the todays waiting averages for a ride, grouped per hour
+    ---
+    parameters:
+      - name: theme_park
+        in: path
+        type: string
+        required: true
+      - name: ride_name
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: List of waiting averages
+        schema:
+          type: array
+          items:
+            type: object
+      500:
+        description: Server error
+    """
+    try:
+        ride_store = RideStore()
+        assert ride_store.validate_theme_park(theme_park), "Unknown theme park"
+        assert ride_store.validate_ride_name(theme_park, ride_name), "Unknown ride"
+
+        result = waiting_time_logic.get_hourly_waiting_time_averages(theme_park, ride_name)
 
         return jsonify(result), 200
 

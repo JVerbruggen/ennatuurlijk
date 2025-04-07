@@ -4,3 +4,4 @@ beautifulsoup4
 flask
 flasgger
 python-dotenv
+pytz
