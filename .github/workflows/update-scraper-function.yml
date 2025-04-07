@@ -45,5 +45,8 @@ jobs:
         run: |
           cd $ROOT_FOLDER
           IMAGE_URI=$AZURE_REGISTRY.azurecr.io/$ACR_REPO_NAME:latest
-          docker build -t $IMAGE_URI .
+          docker build \
+            --buildarg AZURE_SERVICE_BUS_QUEUE_NAME=${{ secrets.AZURE_SERVICE_BUS_QUEUE_NAME }} \
+            --buildarg AZURE_SERVICE_BUS_CONNECTION_STRING=${{ secrets.AZURE_SERVICE_BUS_CONNECTION_STRING }} \
+            -t $IMAGE_URI .
           docker push $IMAGE_URI
