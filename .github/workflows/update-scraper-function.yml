@@ -1,75 +1,40 @@
-name: Deploy Scraper to Azure Function
+name: Build and Push Docker Image
 
-on: workflow_dispatch
-
-env:
-  STORAGE_ACCOUNT_NAME: waitingtimesstorage
-  STORAGE_CONTAINER_NAME: scraper-package
-  PACKAGE_NAME: scraper-latest.zip
-  FUNCTION_APP_NAME: fc-ennatuurlijk-data-fetchers
-  RESOURCE_GROUP: ennatuurlijk-project
+on:
+  push:
+    branches:
+      - master
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      AZURE_REGISTRY: ennatuurlijkscraperregistry
+      ACR_REPO_NAME: scraper
+      ROOT_FOLDER: scraper
+
+    permissions:
+      contents: read
+
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Log in to Azure using Service Principal
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
-    - name: Install Azure
-      run: |
-        npm install -g azure-functions-core-tools@4 --unsafe-perm true
-        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      - name: Azure Container Registry login
+        run: |
+          az acr login --name $AZURE_REGISTRY
 
-    - name: Log in to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Zip the function app
-      run: zip -r ${{ env.PACKAGE_NAME }} .
-
-    - name: Upload ZIP to Blob Storage
-      run: |
-        az storage blob upload \
-          --account-name ${{ env.STORAGE_ACCOUNT_NAME }} \
-          --container-name ${{ env.STORAGE_CONTAINER_NAME }} \
-          --name ${{ env.PACKAGE_NAME }} \
-          --file ${{ env.PACKAGE_NAME }} \
-          --auth-mode login
-
-    - name: Generate SAS token and set WEBSITE_RUN_FROM_PACKAGE
-      run: |
-        # Set expiry 24 hours from now (UTC)
-        EXPIRY=$(date -u -d "1 day" '+%Y-%m-%dT%H:%MZ')
-
-        # Generate SAS token
-        SAS_TOKEN=$(az storage blob generate-sas \
-          --account-name ${{ env.STORAGE_ACCOUNT_NAME }} \
-          --container-name ${{ env.STORAGE_CONTAINER_NAME }} \
-          --name functionapp.zip \
-          --permissions r \
-          --expiry $EXPIRY \
-          --auth-mode login \
-          --output tsv)
-
-        # Construct full SAS URL
-        SAS_URL="https://${{ env.STORAGE_ACCOUNT_NAME }}.blob.core.windows.net/${{ env.STORAGE_CONTAINER_NAME }}/${{ env.PACKAGE_NAME }}?$SAS_TOKEN"
-
-        echo "SAS_URL=$SAS_URL" >> $GITHUB_ENV
-
-        # Set WEBSITE_RUN_FROM_PACKAGE
-        az functionapp config appsettings set \
-          --name ${{ env.FUNCTION_APP_NAME }} \
-          --resource-group ${{ env.RESOURCE_GROUP }} \
-          --settings WEBSITE_RUN_FROM_PACKAGE="$SAS_URL"
-
-    - name: Restart the function app
-      run: |
-        az functionapp restart \
-          --name ${{ env.FUNCTION_APP_NAME }} \
-          --resource-group ${{ env.RESOURCE_GROUP }}
+      - name: Build and push Docker image
+        run: |
+          cd $ROOT_FOLDER
+          IMAGE_URI=$AZURE_REGISTRY.azurecr.io/$ACR_REPO_NAME:latest
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
