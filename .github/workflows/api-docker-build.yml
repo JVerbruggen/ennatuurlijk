@@ -13,6 +13,8 @@ jobs:
       AZURE_REGISTRY: ennatuurlijkscraperregistry
       ACR_REPO_NAME: api
       ROOT_FOLDER: api
+      CONTAINER_NAME: api-container
+      CONTAINER_RESOURCE_GROUP: ennatuurlijk-project
 
     permissions:
       contents: read
@@ -22,7 +24,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Log in to Azure using Service Principal
+      - name: Log in to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -43,3 +45,9 @@ jobs:
           build-args: |
             "AZURE_TABLE_STORAGE_TABLE_NAME=${{ secrets.AZURE_TABLE_STORAGE_TABLE_NAME }}"
             "AZURE_TABLE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_TABLE_STORAGE_CONNECTION_STRING }}"
+
+      - name: Restart Azure Container
+        run: |
+          az container restart \
+            --name "$CONTAINER_NAME" \
+            --resource-group "$CONTAINER_RESOURCE_GROUP"
