@@ -1,0 +1,74 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.2.8">
+  <diagram name="Page-1" id="v3wkkKDNzwEXIRuGeXZs">
+    <mxGraphModel dx="846" dy="760" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="e811CD-kVdlNk8FhSfKc-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="e811CD-kVdlNk8FhSfKc-1" target="e811CD-kVdlNk8FhSfKc-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="119.99857142857135" y="240" as="sourcePoint" />
+            <mxPoint x="119.99857142857135" y="110" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-6" value="Fetches live&lt;div&gt;waiting times&lt;/div&gt;&lt;div&gt;[HTTP GET]&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e811CD-kVdlNk8FhSfKc-5">
+          <mxGeometry x="-0.1647" y="2" relative="1" as="geometry">
+            <mxPoint x="2" y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="e811CD-kVdlNk8FhSfKc-1" target="e811CD-kVdlNk8FhSfKc-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-12" value="Publish&lt;div&gt;raw&lt;/div&gt;&lt;div&gt;data&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e811CD-kVdlNk8FhSfKc-11">
+          <mxGeometry x="-0.3219" y="-1" relative="1" as="geometry">
+            <mxPoint x="6" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-1" value="Scraper&lt;div&gt;[docker]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-13" value="Fetch&lt;div&gt;raw&lt;/div&gt;&lt;div&gt;data&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="e811CD-kVdlNk8FhSfKc-2" target="e811CD-kVdlNk8FhSfKc-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-18" value="Stores&lt;div&gt;processed&lt;/div&gt;&lt;div&gt;data&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="e811CD-kVdlNk8FhSfKc-2" target="e811CD-kVdlNk8FhSfKc-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-2" value="&lt;div&gt;Processor&lt;/div&gt;&lt;div&gt;[docker]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-19" value="Reads processed&lt;div&gt;waiting times&lt;/div&gt;&lt;div&gt;data&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="e811CD-kVdlNk8FhSfKc-3" target="e811CD-kVdlNk8FhSfKc-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-3" value="&lt;div&gt;API&lt;/div&gt;&lt;div&gt;[docker] (exposed)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="595" y="110" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-4" value="Looopings&lt;br&gt;[external source]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="100" y="110" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-7" value="Azure Scheduler" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="90" y="345" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-8" value="starts every 5 minutes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="e811CD-kVdlNk8FhSfKc-7" target="e811CD-kVdlNk8FhSfKc-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-10" value="Azure Service Bus" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="290" y="250" width="70" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="e811CD-kVdlNk8FhSfKc-14" target="e811CD-kVdlNk8FhSfKc-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-16" value="starts every 5 minutes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e811CD-kVdlNk8FhSfKc-15">
+          <mxGeometry x="-0.2262" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-14" value="Azure Scheduler" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="410" y="340" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="e811CD-kVdlNk8FhSfKc-17" value="Azure Data Table" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="620" y="250" width="70" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
