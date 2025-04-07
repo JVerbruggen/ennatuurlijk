@@ -7,7 +7,17 @@ from ridestore import *
 from waitingtime_logic import *
 
 app = Flask(__name__)
-swagger = Swagger(app)
+swagger = Swagger(app, template={
+    "info": {
+        "title": "Theme Park Waiting Times API (TPWT)",
+        "description": "Theme Park Waiting Times API (TPWT) is an easy to use and free API to get up-to-date and historic waiting time data.",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Jurjen V."
+        }
+    }
+})
+
 
 waiting_time_logic = WaitingTimeLogic()
 
@@ -16,6 +26,8 @@ def get_theme_parks():
     """
     Get all available theme parks
     ---
+    tags:
+        - Available Parks and Rides
     responses:
       200:
         description: List of available theme parks
@@ -39,6 +51,8 @@ def get_ride_names(theme_park):
     """
     Get all available ride names
     ---
+    tags:
+        - Available Parks and Rides
     parameters:
       - name: theme_park
         in: path
@@ -68,6 +82,8 @@ def get_daily(theme_park, ride_name):
     """
     Get the todays waiting times for a ride, grouped per hour
     ---
+    tags:
+        - Waiting Time Data
     parameters:
       - name: theme_park
         in: path
@@ -104,6 +120,8 @@ def get_daily_averages(theme_park, ride_name):
     """
     Get the todays waiting averages for a ride, grouped per hour
     ---
+    tags:
+        - Waiting Time Data
     parameters:
       - name: theme_park
         in: path
