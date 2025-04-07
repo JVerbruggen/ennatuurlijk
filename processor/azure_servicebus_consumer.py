@@ -5,7 +5,7 @@ from dataclasses import asdict
 import json
 import os
 
-RETRIEVE_MESSAGE_COUNT = 50
+RETRIEVE_MESSAGE_COUNT = 500
 TIMEOUT_SECONDS = 3
 
 class AzureServiceBusConsumer:
