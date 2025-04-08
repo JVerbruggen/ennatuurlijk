@@ -41,7 +41,7 @@ class AzureTableStorageReader(WaitingTimeStore):
         return self._table_client.query_entities(query_filter=query)
 
     def _validate_query_parameter(self, parameter: str):
-        return parameter.isalnum()
+        return parameter.replace("-", "").isalnum()
 
     def get_all_ride_waiting_times(self, theme_park, ride_name, start_time_utc, end_time_utc):
         """Get all waiting times belonging to a ride"""

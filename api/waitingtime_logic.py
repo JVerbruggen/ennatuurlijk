@@ -24,9 +24,16 @@ class WaitingTimeLogic:
 
         return hour_buckets
 
-    def _get_today_time_bounds(self):
-        target_date = datetime.now(timezone.utc)
-        start_time = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    def _get_today_time_bounds(self, theme_park):
+        local_time_zone = self._ride_store.get_time_zone(theme_park)
+
+        target_date_local = datetime.today()
+        target_date_local = target_date_local.replace(tzinfo=local_time_zone) # TODO: fix start time bug
+        target_date_local = target_date_local.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        target_date = target_date_local.astimezone(pytz.utc).replace(hour=22, minute=0) # TODO: remove hard coded hour replacement
+
+        start_time = target_date
         end_time = target_date + timedelta(days=1)
 
         return start_time, end_time
@@ -34,7 +41,7 @@ class WaitingTimeLogic:
     def get_hourly_waiting_times(self, theme_park, ride_name):
         """"Get waiting times grouped per hour"""
 
-        start_time, end_time = self._get_today_time_bounds()
+        start_time, end_time = self._get_today_time_bounds(theme_park)
 
         # Request data from waiting time store
         with create_waiting_time_store() as waiting_time_store:
@@ -47,7 +54,7 @@ class WaitingTimeLogic:
     def get_hourly_waiting_time_averages(self, theme_park, ride_name):
         """"Get waiting times averages grouped per hour"""
 
-        start_time, end_time = self._get_today_time_bounds()
+        start_time, end_time = self._get_today_time_bounds(theme_park)
 
         # Request data from azure database
         with create_waiting_time_store() as waiting_time_store:
